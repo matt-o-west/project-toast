@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Button from '../Button'
-import Toast from '../Toast'
+import ToastShelf from '../ToastShelf'
 
 import styles from './ToastPlayground.module.css'
 
@@ -22,14 +22,23 @@ function ToastPlayground() {
       id: Date.now().toString(),
     }
 
-    setToastArray([...toastArray, newToast])
+    setToastArray((prevArray) => [...prevArray, newToast])
     setTimeout(() => {
-      setToastArray(toastArray.map((toast) => toast.id !== newToast.id))
+      setToastArray((prevArray) =>
+        prevArray.filter((toast) => toast.id !== newToast.id)
+      )
     }, 3000)
+    setToastDetails({
+      message: '',
+      variant: 'notice',
+      id: '',
+    })
   }
 
-  const handleDismiss = (e) => {
-    setToastArray(toastArray.filter((toast) => toast.id !== e.target.id))
+  const handleDismiss = (id) => {
+    console.log('handle dismiss toast')
+    console.log('this toast id', id)
+    setToastArray((prevArray) => prevArray.filter((toast) => toast.id !== id))
   }
 
   return (
@@ -38,18 +47,7 @@ function ToastPlayground() {
         <img alt='Cute toast mascot' src='/toast.png' />
         <h1>Toast Playground</h1>
       </header>
-      {toastArray.length > 0 &&
-        toastArray.map((toast) => {
-          return (
-            <Toast
-              variant={toast.variant}
-              key={toast.id}
-              handleDismiss={handleDismiss}
-            >
-              {toast.message}
-            </Toast>
-          )
-        })}
+      <ToastShelf toastArray={toastArray} handleDismiss={handleDismiss} />
       <form className={styles.controlsWrapper} onSubmit={handleSubmit}>
         <div className={styles.row}>
           <label
@@ -66,6 +64,7 @@ function ToastPlayground() {
               onChange={(e) =>
                 setToastDetails({ ...toastDetails, message: e.target.value })
               }
+              value={toastDetails.message}
             />
           </div>
         </div>
