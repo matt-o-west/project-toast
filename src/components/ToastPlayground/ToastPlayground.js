@@ -1,45 +1,23 @@
 import React from 'react'
-
+import useEscapeKey from '../../hooks/useEscapeKey'
 import Button from '../Button'
 import ToastShelf from '../ToastShelf'
-
+import { ToastContext } from '../ToastProvider'
 import styles from './ToastPlayground.module.css'
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error']
 
 function ToastPlayground() {
-  const [toastDetails, setToastDetails] = React.useState({
-    message: '',
-    variant: 'notice',
-    id: '',
-  })
-  const [toastArray, setToastArray] = React.useState([])
+  const {
+    toastArray,
+    setToastArray,
+    toastDetails,
+    setToastDetails,
+    handleSubmit,
+    handleDismiss,
+  } = React.useContext(ToastContext)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const newToast = {
-      ...toastDetails,
-      id: Date.now().toString(),
-    }
-
-    setToastArray((prevArray) => [...prevArray, newToast])
-    setTimeout(() => {
-      setToastArray((prevArray) =>
-        prevArray.filter((toast) => toast.id !== newToast.id)
-      )
-    }, 3000)
-    setToastDetails({
-      message: '',
-      variant: 'notice',
-      id: '',
-    })
-  }
-
-  const handleDismiss = (id) => {
-    console.log('handle dismiss toast')
-    console.log('this toast id', id)
-    setToastArray((prevArray) => prevArray.filter((toast) => toast.id !== id))
-  }
+  useEscapeKey(() => setToastArray([]))
 
   return (
     <div className={styles.wrapper}>
